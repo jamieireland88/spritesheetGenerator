@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<title>Spritesheet Generator</title>
+<head>
+	<link href="./css/style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+	<table id="topContainer">
+		<tr>
+			<td rowspan="4" id="dropzoneTD">
+				<div id="dropzone"><p>Drop files here</p></div>
+			</td>
+			<td class="labelTD">
+				<label for="numOfRows">Number of Rows:</label>
+			</td>
+			<td>
+				<input id="numOfRows" type="number" value=0></input>
+			</td>
+		</tr>
+		<tr>
+			<td class="labelTD">
+				<label for="numOfCols">Number of Columns:</label>
+			</td>
+			<td>
+				<input id="numOfCols" type="number" value=0></input>
+			</td>
+		</tr>
+		<tr>
+			<td class="labelTD">
+				<label for="numOfFrames">Number of Frames:</label>
+			</td>
+			<td>
+				<input id="numOfFrames" disabled type="number" value=0></input>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				<button id="generateButton">Generate</button>
+			</td>
+		</tr>
+	</table>
+</body>
+<script src="./js/p5.min.js"></script>
+<script src="./js/jquery-3.3.1.min.js"></script>
+<script src="./js/actions.js"></script>
+</html>

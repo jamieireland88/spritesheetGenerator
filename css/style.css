@@ -1,0 +1,50 @@
+body {
+	background: white;
+}
+
+
+#dropzone {
+	border: 3px darkgrey dashed;
+	border-radius: 20px;
+	text-align: center;
+	box-sizing: border-box;
+	width: 100%;
+	height: 100%
+}
+
+p {
+	position: relative;
+	padding: 0;
+	margin: 0;
+	top: 50%;
+	transform: translate(0, -50%);
+}
+
+canvas {
+	background: #c0c0c0;
+}
+
+#topContainer {
+	position: relative;
+	width: 100%;
+	height: 200px;
+	max-width: 1080px;
+	min-width: 800px;
+	left: 50%;
+	transform: translate(-50%, 0);
+}
+
+td {
+	text-align: center;
+	vertical-align: center;
+}
+
+.labelTD {
+	text-align: left;
+	padding-left: 20px;
+}
+
+#dropzoneTD {
+	width: 60%;
+}
+
