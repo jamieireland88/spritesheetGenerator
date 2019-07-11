@@ -24,6 +24,7 @@ function setup()
 	dropzone.addEventListener('drop', handleDrop, false);
 
 	document.getElementById('generateButton').addEventListener('click', handleGenerate, false);
+	document.getElementById('clearButton').addEventListener('click', clearFrames, false);
 
 	document.getElementById('numOfRows').addEventListener('change', handleRowChange, false);
 	document.getElementById('numOfCols').addEventListener('change', handleColChange, false);
@@ -139,6 +140,19 @@ function handleColChange()
 	var newRowVal = parseInt(document.getElementById('numOfFrames').value) / newVal;
 	document.getElementById('numOfRows').value = newRowVal;
 	generatePreview();
+}
+
+function clearFrames()
+{
+	frames = [];
+	imgFiles = [];
+
+	if(previewImage)
+		$(previewImage).remove();
+
+	document.getElementById('numOfRows').value = 0;
+	document.getElementById('numOfCols').value = 0;
+	document.getElementById('numOfFrames').value = 0;
 }
 
 function generatePreview()
