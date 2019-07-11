@@ -1,6 +1,8 @@
 var dropzone;
 var frames = [];
 var imgFiles = [];
+var finalCanvas;
+var previewImage;
 function setup()
 {
 	noCanvas();
@@ -8,19 +10,23 @@ function setup()
 	dropzone = document.getElementById('dropzone');
 
 	['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-	  dropzone.addEventListener(eventName, preventDefaults, false)
+	  dropzone.addEventListener(eventName, preventDefaults, false);
 	});
+	document.getElementById('viewer').addEventListener('contextmenu', preventDefaults, false);
 
 	['dragenter', 'dragover'].forEach(eventName => {
-	  dropzone.addEventListener(eventName, highlight, false)
+	  dropzone.addEventListener(eventName, highlight, false);
 	});
 
 	['dragleave', 'drop'].forEach(eventName => {
-	  dropzone.addEventListener(eventName, unhighlight, false)
+	  dropzone.addEventListener(eventName, unhighlight, false);
 	});
-	dropzone.addEventListener('drop', handleDrop, false)
+	dropzone.addEventListener('drop', handleDrop, false);
 
 	document.getElementById('generateButton').addEventListener('click', handleGenerate, false);
+
+	document.getElementById('numOfRows').addEventListener('change', handleRowChange, false);
+	document.getElementById('numOfCols').addEventListener('change', handleColChange, false);
 }
 
 function highlight()
@@ -80,19 +86,105 @@ function handleFiles(files)
 	})(img);
 
     reader.readAsDataURL(file);
-  }
+  } 
+  setTimeout(generatePreview, 500);
 }
 
 function handleUI()
 {
-
 	document.getElementById('numOfRows').value = 1;
 	document.getElementById('numOfCols').value = imgFiles.length;
 	document.getElementById('numOfFrames').value = imgFiles.length;
 }
 
+function handleRowChange()
+{
+	if(document.getElementById('numOfFrames').value <= 0)
+	{
+		alert('No frames loaded');
+		document.getElementById('numOfCols').value = 0;
+		document.getElementById('numOfRows').value = 0;
+		return;
+	}
+	var newVal = parseInt(document.getElementById('numOfRows').value);
+
+	if(newVal >= parseInt(document.getElementById('numOfFrames').value))
+	{
+		newVal = parseInt(document.getElementById('numOfFrames').value);
+		document.getElementById('numOfRows').value = document.getElementById('numOfFrames').value;
+	}
+
+	var newColVal = parseInt(document.getElementById('numOfFrames').value) / newVal;
+	document.getElementById('numOfCols').value = newColVal;
+	generatePreview();
+}
+
+function handleColChange()
+{
+	if(document.getElementById('numOfFrames').value <= 0)
+	{
+		alert('No frames loaded');
+		document.getElementById('numOfCols').value = 0;
+		document.getElementById('numOfRows').value = 0;
+		return;
+	}
+	var newVal = parseInt(document.getElementById('numOfCols').value);
+	
+	if(newVal >= parseInt(document.getElementById('numOfFrames').value))
+	{
+		newVal = parseInt(document.getElementById('numOfFrames').value);		
+		document.getElementById('numOfCols').value = document.getElementById('numOfFrames').value;
+	}
+
+	var newRowVal = parseInt(document.getElementById('numOfFrames').value) / newVal;
+	document.getElementById('numOfRows').value = newRowVal;
+	generatePreview();
+}
+
+function generatePreview()
+{
+	finalCanvas = document.createElement('canvas');
+	var ctx = finalCanvas.getContext('2d');
+	var width = parseInt(frames[0].getAttribute('width'));
+	var height = parseInt(frames[0].getAttribute('height'));;
+	var cols = parseInt(document.getElementById('numOfCols').value);
+	var rows = parseInt(document.getElementById('numOfRows').value);
+	var pos = [];
+	var currTop = 0;
+	var currLeft = 0;
+	frames.forEach(function(content, index){
+
+		if(index % cols == 0)
+		{
+			currLeft = 0;
+			if(index != 0)
+				currTop += height;
+		}	
+
+		pos.push({x: currLeft, y: currTop});
+		currLeft += width;						
+	});
+
+	finalCanvas.setAttribute('width', width * cols); 
+    finalCanvas.setAttribute('height', height * rows);
+
+	frames.forEach(function(content, index){
+		ctx.drawImage(content, pos[index].x, pos[index].y);
+	});	
+	
+	if(previewImage)
+		$(previewImage).remove();
+
+	var d=finalCanvas.toDataURL("image/png");
+	previewImage = document.createElement('img');
+	previewImage.setAttribute('src', d);
+	previewImage.setAttribute('id', 'previewImage');
+	document.getElementById('viewer').append(previewImage);		
+}
+
 function handleGenerate()
 {
+
 	if(document.getElementById('numOfFrames').value <= 0)
 	{
 		alert('No frames loaded');
@@ -105,28 +197,9 @@ function handleGenerate()
 		return;
 	}
 
-	var canvas = document.createElement('canvas');
-	var ctx = canvas.getContext('2d');
-	var width = 0;
-	var height = 0;
-	var pos = [];
-	frames.forEach(function(content, index){	
-		pos.push({x: width, y: 0});	
-		width += parseInt(content.getAttribute('width'));
-		if(parseInt(content.getAttribute('height')) > height)
-			height = parseInt(content.getAttribute('height'));	
-	});
-
-	canvas.setAttribute('width', width); 
-    canvas.setAttribute('height', height);
-
-	frames.forEach(function(content, index){
-		ctx.drawImage(content, pos[index].x, pos[index].y);
-	});	
-	
-	var d=canvas.toDataURL("image/png");
+	var d=finalCanvas.toDataURL("image/png");
 	var w=window.open('about:blank');
-	w.document.write("<img src='"+d+"' alt='from canvas'/>");	
+	w.document.write("<img src='"+d+"' alt='from canvas'/>");
 }
 
 
